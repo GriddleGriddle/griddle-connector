@@ -30,7 +30,6 @@ export var GriddleRedux = ComposedComponent => class GriddleRedux extends Compon
   }
 
   render() {
-      debugger;
     return (
       <Provider store={this.store}>
         <this.component {...this.props}>
