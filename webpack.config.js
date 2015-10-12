@@ -1,12 +1,5 @@
 var webpack = require('webpack');
 
-var reactExternal = {
-  root: 'React',
-  commonjs2: 'react',
-  commonjs: 'react',
-  amd: 'react'
-};
-
 module.exports = {
   devtool: 'eval',
   entry: './index',
@@ -15,10 +8,6 @@ module.exports = {
     filename: 'griddle-connector.js',
     publicPath: '/build/',
     libraryTarget: 'commonjs2'
-  },
-  externals: {
-    'react': reactExternal,
-    'griddle-core': 'griddle-core'
   },
   plugins: [
   ],

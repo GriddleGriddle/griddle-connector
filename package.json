@@ -30,7 +30,8 @@
     "redux": "^3.0.2"
   },
   "dependencies": {
-    "griddle-core": "file:../griddle-core"
+    "griddle-core": "file:../griddle-core",
+    "react": "^0.14.0"
   },
   "bugs": {
     "url": "https://github.com/GriddleGriddle/griddle-connector/issues"
