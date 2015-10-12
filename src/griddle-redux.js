@@ -9,8 +9,8 @@ import { GriddleActions } from 'griddle-core';
 import { GriddleHelpers as Helpers } from 'griddle-core'
 
 export var GriddleRedux = ComposedComponent => class GriddleRedux extends Component {
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     //TODO: Switch this around so that the states and the reducers come in as props.
     //      if nothing is specified, it should default to the local one maybe
 
@@ -26,16 +26,16 @@ export var GriddleRedux = ComposedComponent => class GriddleRedux extends Compon
     /* set up the redux store */
     const combinedReducer = combineReducers(griddleReducer);
     this.store = createStore(griddleReducer);
-debugger;
     this.component = GriddleContainer(ComposedComponent);
   }
 
   render() {
+      debugger;
     return (
       <Provider store={this.store}>
-        {() => <this.component {...this.props}>
+        <this.component {...this.props}>
           {this.props.children}
-        </this.component>}
+        </this.component>
       </Provider>
     )
   }
