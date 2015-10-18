@@ -19,7 +19,7 @@ export var GriddleContainer = ComposedComponent => class extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {};
-debugger;
+
     this.state.actionCreators = bindActionCreators(GriddleActions, props.dispatch);
 
     const properties = PropertyHelper.propertiesToJS(
