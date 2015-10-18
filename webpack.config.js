@@ -14,7 +14,7 @@ module.exports = {
     path: __dirname + '/build/',
     filename: 'griddle-connector.js',
     publicPath: '/build/',
-    libraryTarget: 'commonjs2'
+    libraryTarget: 'umd'
   },
   externals: {
     'react': reactExternal,
