@@ -18,7 +18,6 @@ module.exports = {
   },
   externals: {
     'react': reactExternal,
-    'griddle-core': 'griddle-core'
   },
   plugins: [
   ],
