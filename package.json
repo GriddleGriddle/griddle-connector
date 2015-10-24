@@ -27,7 +27,8 @@
     "babel-plugin-object-assign": "^1.2.0",
     "react": "^0.14.0",
     "react-redux": "^3.1.0",
-    "redux": "^3.0.2"
+    "redux": "^3.0.2",
+    "redux-thunk": "^1.0.0"
   },
   "dependencies": {
     "griddle-core": "file:../griddle-core",
