@@ -79,18 +79,19 @@ export var GriddleRedux = ({Griddle, Components, Plugins}) => class GriddleRedux
     //TODO: Switch this around so that the states and the reducers come in as props.
     //      if nothing is specified, it should default to the local one maybe
 
-    const { reducer, pluginComponents } =  processPlugins(Plugins, Components);
+    const { reducer, components } =  processPlugins(Plugins, Components);
 
     /* set up the redux store */
     const combinedReducer = combineReducers(reducer);
     this.store = createStore(reducer);
+    this.components = components;
     this.component = GriddleContainer(Griddle);
   }
 
   render() {
     return (
       <Provider store={this.store}>
-        <this.component {...this.props}>
+        <this.component {...this.props} components={this.components}>
           {this.props.children}
         </this.component>
       </Provider>
