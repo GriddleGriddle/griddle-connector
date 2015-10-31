@@ -27,22 +27,28 @@ const PropertyHelper = {
     //if just an object
       columnProperties[row.props.children.props.id] = row.props.children.props;
     }
-
+    
     var rowProps = Object.assign({}, row.props);
     delete rowProps.children;
 
-    const visibleKeys = Object.keys(columnProperties);
+    if (!rowProps.hasOwnProperty('childColumnName')) {
+      rowProps.childColumnName = 'children';
+    }
 
+    const visibleKeys = Object.keys(columnProperties);
     //make new column properties for all of the columns that are in the props collection
     //TODO: make a property on griddle that will say only show the columns that have a column definition
     const hiddenColumns = allColumns.filter(column => visibleKeys.indexOf(column) < 0);
     let hiddenColumnProperties = {};
     hiddenColumns.forEach(column => hiddenColumnProperties[column] = {id: column});
 
+    const ignoredColumns = ['children']
+
     return {
       rowProperties: rowProps,
       columnProperties,
-      hiddenColumnProperties
+      hiddenColumnProperties,
+      ignoredColumns
     };
   }
 };
