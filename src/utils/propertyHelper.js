@@ -1,7 +1,6 @@
 function buildColumnProperties(allColumns) {
   //TODO: Make this more efficient -- this is just kind of make it work at this point
   let properties = {};
-
   allColumns.forEach(column => properties[column] = ({id: column}));
 
   return properties;
@@ -27,7 +26,7 @@ const PropertyHelper = {
     //if just an object
       columnProperties[row.props.children.props.id] = row.props.children.props;
     }
-    
+
     var rowProps = Object.assign({}, row.props);
     delete rowProps.children;
 
@@ -35,10 +34,16 @@ const PropertyHelper = {
       rowProps.childColumnName = 'children';
     }
 
+    //TODO: Don't check this this way :|
+    if(Object.keys(columnProperties).length === 0) {
+      columnProperties = buildColumnProperties(allColumns);
+    }
+
     const visibleKeys = Object.keys(columnProperties);
     //make new column properties for all of the columns that are in the props collection
     //TODO: make a property on griddle that will say only show the columns that have a column definition
     const hiddenColumns = allColumns.filter(column => visibleKeys.indexOf(column) < 0);
+
     let hiddenColumnProperties = {};
     hiddenColumns.forEach(column => hiddenColumnProperties[column] = {id: column});
 
