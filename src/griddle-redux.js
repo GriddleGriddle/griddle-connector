@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { GriddleContainer } from './griddleContainer';
 
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
@@ -87,7 +87,7 @@ export var GriddleRedux = ({Griddle, Components, Plugins}) => class GriddleRedux
 
     /* set up the redux store */
     const combinedReducer = combineReducers(reducer);
-    this.store = createStore(reducer);
+    this.store = createStoreWithMiddleware(reducer);
     this.components = components;
     this.component = GriddleContainer(Griddle);
   }
