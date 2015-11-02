@@ -18,6 +18,8 @@ module.exports = {
   },
   externals: {
     'react': reactExternal,
+    'griddle-core': 'griddle-core',
+    'immutable': 'immutable'
   },
   plugins: [
   ],
