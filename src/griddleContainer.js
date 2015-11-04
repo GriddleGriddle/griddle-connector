@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { GriddleActions } from 'griddle-core';
+//import { GriddleActions } from 'griddle-core';
 import PropertyHelper from './utils/propertyHelper';
 
-export var GriddleContainer = ComposedComponent => {
+export var GriddleContainer = (Actions) => ComposedComponent => {
   class Container extends Component {
     static defaultProps = {
       dataKey: 'visibleData'
@@ -14,7 +14,7 @@ export var GriddleContainer = ComposedComponent => {
     constructor(props, context) {
       super(props, context);
       this.state = {};
-      this.state.actionCreators = bindActionCreators(GriddleActions, props.dispatch);
+      this.state.actionCreators = bindActionCreators(Actions, props.dispatch);
 
       const properties = PropertyHelper.propertiesToJS(
         props.children,

@@ -17,12 +17,13 @@ export const previousOrCombined = (previous, newValue) => {
 export function combinePlugins(plugins) {
   return plugins.reduce((previous, current) => (
     {
+      actions: Object.assign(previous.actions, current.actions),
       reducers: previousOrCombined(previous.reducers, current.reducers),
       states: previousOrCombined(previous.states, current.states),
       helpers: previousOrCombined(previous.helpers, current.helpers),
       components: previousOrCombined(previous.components, current.components),
     }
-  ), { reducers: [], states: [], helpers: [], components: []})
+  ), { actions: GriddleActions, reducers: [], states: [], helpers: [], components: []})
 }
 
 export function composer(functions) {
@@ -52,6 +53,7 @@ export const combineComponents = ({ plugins = null, components = null }) => {
 export const processPlugins = (plugins, originalComponents) => {
   if(!plugins) {
     return {
+      actions: GriddleActions,
       reducer : GriddleReducer(
         [States.data, States.local],
         [Reducers.data, Reducers.local],
@@ -68,10 +70,10 @@ export const processPlugins = (plugins, originalComponents) => {
 
   const components = combineComponents({ plugins, components: originalComponents });
   if(components) {
-    return { components, reducer }
+    return { actions: combinedPlugin.actions, components, reducer }
   }
 
-  return({ reducer });
+  return({ actions: combinedPlugin.actions, reducer });
 }
 
 export var GriddleRedux = ({Griddle, Components, Plugins}) => class GriddleRedux extends Component {
@@ -80,7 +82,7 @@ export var GriddleRedux = ({Griddle, Components, Plugins}) => class GriddleRedux
     //TODO: Switch this around so that the states and the reducers come in as props.
     //      if nothing is specified, it should default to the local one maybe
 
-    const { reducer, components } =  processPlugins(Plugins, Components);
+    const { actions, reducer, components } =  processPlugins(Plugins, Components);
 
         // Use the thunk middleware to allow for multiple dispatches in a single action.
     const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
@@ -89,7 +91,7 @@ export var GriddleRedux = ({Griddle, Components, Plugins}) => class GriddleRedux
     const combinedReducer = combineReducers(reducer);
     this.store = createStoreWithMiddleware(reducer);
     this.components = components;
-    this.component = GriddleContainer(Griddle);
+    this.component = GriddleContainer(actions)(Griddle);
   }
 
   render() {
