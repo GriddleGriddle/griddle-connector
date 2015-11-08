@@ -18,6 +18,8 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
 
       const properties = PropertyHelper.propertiesToJS({
         rowProperties: props.children,
+        defaultColumns: props.columns,
+        ignoredColumns: props.ignoredColumns,
         allColumns: props.data.length > 0 ?
           Object.keys(props.data[0]) :
           []
