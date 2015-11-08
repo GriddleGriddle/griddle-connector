@@ -1,42 +1,49 @@
-function buildColumnProperties(allColumns) {
+//TODO: Move most of this functionality to the component or something like that :|
+export function columnPropertiesFromArray(columns) {
   //TODO: Make this more efficient -- this is just kind of make it work at this point
   let properties = {};
-  allColumns.forEach(column => properties[column] = ({id: column}));
+  columns.forEach(column => properties[column] = ({id: column}));
 
   return properties;
 }
 
+export function buildColumnProperties({ rowProperties, allColumns, defaultColumns}) {
+  let columnProperties = defaultColumns ? columnPropertiesFromArray(defaultColumns) : {};
+
+  if(rowProperties && rowProperties.props && !!rowProperties.props.children && Array.isArray(rowProperties.props.children)) {
+    columnProperties = rowProperties.props.children.reduce((previous, current) => {
+      previous[current.props.id] = current.props; return previous;
+    }, columnProperties)
+  } else if (rowProperties && rowProperties.props && rowProperties.props.children) {
+  //if just an object
+    columnProperties[rowProperties.props.children.props.id] = rowProperties.props.children.props;
+  }
+
+  //TODO: Don't check this this way :|
+  if(Object.keys(columnProperties).length === 0 && allColumns) {
+    columnProperties = columnPropertiesFromArray(allColumns);
+  }
+
+  return columnProperties;
+}
+
 const PropertyHelper = {
-  propertiesToJS(row, allColumns) {
+  propertiesToJS({ rowProperties, allColumns, defaultColumns, ignoredColumns=[] }) {
     //if we don't have children return an empty metatdata object
-    if(!row) {
+    if(!rowProperties) {
       return {
         rowProperties: null,
-        columnProperties: buildColumnProperties(allColumns)
+        columnProperties: columnPropertiesFromArray(allColumns)
       };
     }
+ 
+    const columnProperties = buildColumnProperties({ rowProperties, allColumns, defaultColumns });
 
-    let columnProperties = {};
-
-    //TODO: Document what this does and clean it up. Can't really see anyone just being able to 'reason about' what this is doing too easily :)
-    //if an array
-    if(!!row.props.children && Array.isArray(row.props.children)) {
-      row.props.children.forEach(child => columnProperties[child.props.id] = child.props);
-    } else if (row.props.children) {
-    //if just an object
-      columnProperties[row.props.children.props.id] = row.props.children.props;
-    }
-
-    var rowProps = Object.assign({}, row.props);
+    var rowProps = Object.assign({}, rowProperties.props);
     delete rowProps.children;
 
     if (!rowProps.hasOwnProperty('childColumnName')) {
       rowProps.childColumnName = 'children';
-    }
-
-    //TODO: Don't check this this way :|
-    if(Object.keys(columnProperties).length === 0) {
-      columnProperties = buildColumnProperties(allColumns);
     }
 
     const visibleKeys = Object.keys(columnProperties);
@@ -47,13 +54,14 @@ const PropertyHelper = {
     let hiddenColumnProperties = {};
     hiddenColumns.forEach(column => hiddenColumnProperties[column] = {id: column});
 
-    const ignoredColumns = ['children']
+    //make sure that children is in the ignored column list
+    const ignoredColumnsWithChildren = ignoredColumns.indexOfChildren > -1 ? ignoredColumns : [...ignoredColumns, 'children']
 
     return {
       rowProperties: rowProps,
       columnProperties,
       hiddenColumnProperties,
-      ignoredColumns
+      ignoredColumns: ignoredColumnsWithChildren
     };
   }
 };

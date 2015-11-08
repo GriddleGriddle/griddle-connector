@@ -16,12 +16,12 @@ export var GriddleContainer = ComposedComponent => {
       this.state = {};
       this.state.actionCreators = bindActionCreators(GriddleActions, props.dispatch);
 
-      const properties = PropertyHelper.propertiesToJS(
-        props.children,
-        props.data.length > 0 ?
+      const properties = PropertyHelper.propertiesToJS({
+        rowProperties: props.children,
+        allColumns: props.data.length > 0 ?
           Object.keys(props.data[0]) :
           []
-      );
+      });
 
       if(props.data) {
         this.state.actionCreators.loadData(props.data, properties);
