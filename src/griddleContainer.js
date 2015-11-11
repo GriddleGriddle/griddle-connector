@@ -36,6 +36,8 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
         <ComposedComponent
           {...state}
           components={this.props.components}
+          style={this.props.style}
+          settings={this.props.settings}
           {...this.state.actionCreators}
           data={state[dataKey]} />
       );
