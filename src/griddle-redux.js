@@ -76,20 +76,46 @@ export const processPlugins = (plugins, originalComponents) => {
   return({ actions: combinedPlugin.actions, reducer });
 }
 
+export const bindStoreToActions = (actions, actionsToBind, store) => {
+  return Object.keys(actions).reduce((actions, actionKey) => {
+    if (actionsToBind.indexOf(actions[actionKey]) > -1) {
+      // Bind the store to the action if it's in the array.
+      actions[actionKey] =  actions[actionKey].bind(null, store)
+    }
+    return actions;
+  }, actions);
+}
+
+export const processPluginActions = (actions, plugins, store) => {
+  if (!plugins) {
+    return actions;
+  }
+
+  // Bind store to necessary actions.
+  return plugins.reduce((previous, current) => {
+    const processActions = current.storeBoundActions && current.storeBoundActions.length > 0;
+    return processActions ? bindStoreToActions(previous, current.storeBoundActions, store) : actions;
+  }, actions);
+}
+
 export var GriddleRedux = ({Griddle, Components, Plugins}) => class GriddleRedux extends Component {
   constructor(props, context) {
     super(props, context);
     //TODO: Switch this around so that the states and the reducers come in as props.
     //      if nothing is specified, it should default to the local one maybe
 
-    const { actions, reducer, components } =  processPlugins(Plugins, Components);
+    let { actions, reducer, components } =  processPlugins(Plugins, Components);
 
-        // Use the thunk middleware to allow for multiple dispatches in a single action.
+    // Use the thunk middleware to allow for multiple dispatches in a single action.
     const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 
     /* set up the redux store */
     const combinedReducer = combineReducers(reducer);
     this.store = createStoreWithMiddleware(reducer);
+
+    // Update the actions with the newly created store.
+    actions = processPluginActions(actions, Plugins, this.store);
+
     this.components = components;
     this.component = GriddleContainer(actions)(Griddle);
   }
