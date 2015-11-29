@@ -29,11 +29,14 @@ export function buildColumnProperties({ rowProperties, allColumns, defaultColumn
 
 const PropertyHelper = {
   propertiesToJS({ rowProperties, allColumns, defaultColumns, ignoredColumns=[] }) {
+    const ignoredColumnsWithChildren = ignoredColumns.indexOfChildren > -1 ? ignoredColumns : [...ignoredColumns, 'children']
+
     //if we don't have children return an empty metatdata object
     if(!rowProperties) {
       return {
         rowProperties: null,
-        columnProperties: columnPropertiesFromArray(allColumns)
+        columnProperties: columnPropertiesFromArray(allColumns),
+        ignoredColumns: ignoredColumnsWithChildren
       };
     }
  
@@ -55,7 +58,6 @@ const PropertyHelper = {
     hiddenColumns.forEach(column => hiddenColumnProperties[column] = {id: column});
 
     //make sure that children is in the ignored column list
-    const ignoredColumnsWithChildren = ignoredColumns.indexOfChildren > -1 ? ignoredColumns : [...ignoredColumns, 'children']
 
     return {
       rowProperties: rowProps,
