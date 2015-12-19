@@ -30,16 +30,14 @@ export function buildColumnProperties({ rowProperties, allColumns, defaultColumn
 const PropertyHelper = {
   propertiesToJS({ rowProperties, allColumns, defaultColumns, ignoredColumns=[] }) {
     const ignoredColumnsWithChildren = ignoredColumns.indexOfChildren > -1 ? ignoredColumns : [...ignoredColumns, 'children']
-
     //if we don't have children return an empty metatdata object
     if(!rowProperties) {
       return {
         rowProperties: null,
-        columnProperties: columnPropertiesFromArray(allColumns),
+        columnProperties: columnPropertiesFromArray(defaultColumns || allColumns),
         ignoredColumns: ignoredColumnsWithChildren
       };
     }
- 
     const columnProperties = buildColumnProperties({ rowProperties, allColumns, defaultColumns });
 
     var rowProps = Object.assign({}, rowProperties.props);
