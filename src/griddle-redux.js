@@ -80,7 +80,7 @@ export const bindStoreToActions = (actions, actionsToBind, store) => {
   return Object.keys(actions).reduce((actions, actionKey) => {
     if (actionsToBind.indexOf(actions[actionKey]) > -1) {
       // Bind the store to the action if it's in the array.
-      actions[actionKey] =  actions[actionKey].bind(null, store)
+      actions[actionKey] = actions[actionKey].bind(null, store)
     }
     return actions;
   }, actions);

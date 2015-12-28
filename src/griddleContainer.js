@@ -20,10 +20,13 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
         rowProperties: props.children,
         defaultColumns: props.columns,
         ignoredColumns: props.ignoredColumns,
-        allColumns: props.data.length > 0 ?
+        allColumns: props.data && props.data.length > 0 ?
           Object.keys(props.data[0]) :
           []
       });
+
+      // Initialize the grid.
+      this.state.actionCreators.initializeGrid();
 
       if(props.data) {
         this.state.actionCreators.loadData(props.data, properties);
