@@ -29,14 +29,29 @@ export function buildColumnProperties({ rowProperties, allColumns, defaultColumn
 
 const PropertyHelper = {
   propertiesToJS({ rowProperties, allColumns, defaultColumns, ignoredColumns=[] }) {
+    const getHiddenColumns = columnProperties => {
+      const visibleKeys = Object.keys(columnProperties);
+      const hiddenColumns = allColumns.filter(column => visibleKeys.indexOf(column) < 0);
+
+      let hiddenColumnProperties = {};
+      hiddenColumns.forEach(column => hiddenColumnProperties[column] = {id: column});
+
+      return hiddenColumnProperties;
+    }
+
+    const ignoredColumnsWithChildren = ignoredColumns.indexOfChildren > -1 ? ignoredColumns : [...ignoredColumns, 'children']
     //if we don't have children return an empty metatdata object
     if(!rowProperties) {
+      const columnProperties = columnPropertiesFromArray(defaultColumns || allColumns);
+      const hiddenColumnProperties = getHiddenColumns(columnProperties);
+
       return {
         rowProperties: null,
-        columnProperties: columnPropertiesFromArray(allColumns)
+        columnProperties,
+        ignoredColumns: ignoredColumnsWithChildren,
+        hiddenColumnProperties: hiddenColumnProperties
       };
     }
- 
     const columnProperties = buildColumnProperties({ rowProperties, allColumns, defaultColumns });
 
     var rowProps = Object.assign({}, rowProperties.props);
@@ -46,16 +61,9 @@ const PropertyHelper = {
       rowProps.childColumnName = 'children';
     }
 
-    const visibleKeys = Object.keys(columnProperties);
-    //make new column properties for all of the columns that are in the props collection
-    //TODO: make a property on griddle that will say only show the columns that have a column definition
-    const hiddenColumns = allColumns.filter(column => visibleKeys.indexOf(column) < 0);
-
-    let hiddenColumnProperties = {};
-    hiddenColumns.forEach(column => hiddenColumnProperties[column] = {id: column});
+    const hiddenColumnProperties = getHiddenColumns(columnProperties);
 
     //make sure that children is in the ignored column list
-    const ignoredColumnsWithChildren = ignoredColumns.indexOfChildren > -1 ? ignoredColumns : [...ignoredColumns, 'children']
 
     return {
       rowProperties: rowProps,
