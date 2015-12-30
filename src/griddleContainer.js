@@ -26,10 +26,10 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
       });
 
       // Initialize the grid.
-      this.state.actionCreators.initializeGrid();
+      this.state.actionCreators.initializeGrid(properties);
 
       if(props.data) {
-        this.state.actionCreators.loadData(props.data, properties);
+        this.state.actionCreators.loadData(props.data);
       }
     }
 
