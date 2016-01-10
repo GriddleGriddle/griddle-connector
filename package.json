@@ -1,6 +1,6 @@
 {
   "name": "griddle-connector",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Connects griddle-core to react components",
   "main": "build/griddle-connector.js",
   "scripts": {
