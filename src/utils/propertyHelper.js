@@ -69,7 +69,8 @@ const PropertyHelper = {
       rowProperties: rowProps,
       columnProperties,
       hiddenColumnProperties,
-      ignoredColumns: ignoredColumnsWithChildren
+      ignoredColumns: ignoredColumnsWithChildren,
+      metadataColumn: '__metadata'
     };
   }
 };
