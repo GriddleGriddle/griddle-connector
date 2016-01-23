@@ -48,10 +48,7 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
     }
 
     componentWillReceiveProps(nextProps) {
-      //figure out if the columns are the same
-      const columns = Object.keys(nextProps.state.renderProperties.columnProperties)
-
-      if(nextProps.data && !areArraysSame(nextProps.state.data, nextProps.data, columns)) {
+      if(nextProps.data !== this.props.data) {
         this.loadData(nextProps);
       }
     }

@@ -9,7 +9,6 @@ import {Reducers, States, GriddleReducer} from 'griddle-core';
 import { GriddleActions } from 'griddle-core';
 import { GriddleHelpers as Helpers } from 'griddle-core'
 import compose from 'lodash.compose';
-import extend from 'lodash.assign';
 
 export const previousOrCombined = (previous, newValue) => {
   return newValue ? [...previous, newValue] : previous;
@@ -116,7 +115,7 @@ export var GriddleRedux = ({Griddle, Components, Plugins}) => class GriddleRedux
     // Update the actions with the newly created store.
     actions = processPluginActions(actions, Plugins, this.store);
 
-    this.components = extend({}, components, props.components);
+    this.components = Object.assign({}, components, props.components);
     this.component = GriddleContainer(actions)(Griddle);
   }
 
