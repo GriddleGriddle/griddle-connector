@@ -1,5 +1,3 @@
-import { GriddleRedux } from './src/griddle-redux';
-import { GriddleContainer } from './src/griddleContainer';
+import { GriddleRedux } from './src/griddleRedux';
 
-export { GriddleContainer as GriddleContainer };
 export { GriddleRedux as GriddleRedux };

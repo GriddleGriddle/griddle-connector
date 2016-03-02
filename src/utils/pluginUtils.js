@@ -1,19 +1,16 @@
-import React, { Component } from 'react';
-import { GriddleContainer } from './griddleContainer';
-
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-
-import {Reducers, States, GriddleReducer} from 'griddle-core';
-import { GriddleActions } from 'griddle-core';
-import { GriddleHelpers as Helpers } from 'griddle-core'
 import compose from 'lodash.compose';
 
+import { Reducers, States, GriddleReducer, Selectors } from 'griddle-core';
+import { GriddleActions } from 'griddle-core';
+import { GriddleHelpers as Helpers } from 'griddle-core'
+
+//This gets the previous and newValue if newValue exists
+//other wise just the previous value
 export const previousOrCombined = (previous, newValue) => {
   return newValue ? [...previous, newValue] : previous;
 }
 
+//Sets up a new plugin object for each plugin
 export function combinePlugins(plugins) {
   return plugins.reduce((previous, current) => (
     {
@@ -26,10 +23,12 @@ export function combinePlugins(plugins) {
   ), { actions: GriddleActions, reducers: [], states: [], helpers: [], components: []})
 }
 
+//composes functions left to right
 export function composer(functions) {
   return compose.apply(this, functions.reverse())
 }
 
+//combines and wraps the components -- not a big fan of how this is implemented
 export const combineComponents = ({ plugins = null, components = null }) => {
   if(!plugins || !components) { return; }
 
@@ -76,16 +75,6 @@ export const processPlugins = (plugins, originalComponents) => {
   return({ actions: combinedPlugin.actions, reducer });
 }
 
-export const bindStoreToActions = (actions, actionsToBind, store) => {
-  return Object.keys(actions).reduce((actions, actionKey) => {
-    if (actionsToBind.indexOf(actions[actionKey]) > -1) {
-      // Bind the store to the action if it's in the array.
-      actions[actionKey] = actions[actionKey].bind(null, store)
-    }
-    return actions;
-  }, actions);
-}
-
 export const processPluginActions = (actions, plugins, store) => {
   if (!plugins) {
     return actions;
@@ -98,38 +87,14 @@ export const processPluginActions = (actions, plugins, store) => {
   }, actions);
 }
 
-export var GriddleRedux = ({Griddle, Components, Plugins}) => class GriddleRedux extends Component {
-  constructor(props, context) {
-    super(props, context);
-    //TODO: Switch this around so that the states and the reducers come in as props.
-    //      if nothing is specified, it should default to the local one maybe
-    let { actions, reducer, components } =  processPlugins(Plugins, Components);
+//TODO: Can this go away and just be part of connect?
+export const bindStoreToActions = (actions, actionsToBind, store) => {
+  return Object.keys(actions).reduce((actions, actionKey) => {
+    if (actionsToBind.indexOf(actions[actionKey]) > -1) {
+      // Bind the store to the action if it's in the array.
+      actions[actionKey] = actions[actionKey].bind(null, store)
+    }
+    return actions;
+  }, actions);
 
-    // Use the thunk middleware to allow for multiple dispatches in a single action.
-    const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
-
-    /* set up the redux store */
-    const combinedReducer = combineReducers(reducer);
-    this.store = createStoreWithMiddleware(reducer);
-
-    // Update the actions with the newly created store.
-    actions = processPluginActions(actions, Plugins, this.store);
-
-    this.components = Object.assign({}, components, props.components);
-    this.component = GriddleContainer(actions)(Griddle);
-  }
-
-  render() {
-    return (
-      <Provider store={this.store}>
-        <this.component {...this.props} components={this.components}>
-          {this.props.children}
-        </this.component>
-      </Provider>
-    )
-  }
-
-  static PropTypes = {
-    data: React.PropTypes.array.isRequired
-  }
 }
