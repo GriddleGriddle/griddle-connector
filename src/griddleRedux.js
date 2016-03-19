@@ -53,9 +53,9 @@ class GriddleLoader extends Component {
 
 
 export var GriddleRedux = ({Griddle, Components, Plugins}) => {
-  const GriddleContainer = (props) => { debugger; return (
+  const GriddleContainer = (props) => (
     <Griddle {...props} />
-  )}
+  )
   const { actions, reducer, components } =  processPlugins(Plugins, Components);
 
   Selectors.localSelectors.registerUtils(Utils.sortUtils);
@@ -91,7 +91,12 @@ export var GriddleRedux = ({Griddle, Components, Plugins}) => {
           Selectors.localSelectors.gridStateSelector,
           (gridState) => (
             {
-              data: gridState.visibleData.toJSON()
+              ...gridState,
+              data: gridState.visibleData.toJSON(),
+              metadata: gridState.metaData.toJSON(),
+              currentPageData: gridState.currentPageData.toJSON(),
+              renderProperties: gridState.renderProperties.toJSON(),
+              columnTitles: gridState.columnTitles
             }
           )
         ),
