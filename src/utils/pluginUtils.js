@@ -1,7 +1,7 @@
 import compose from 'lodash.compose';
+import { createSelector, createStructuredSelector } from 'reselect';
 
-import { Reducers, States, GriddleReducer, Selectors } from 'griddle-core';
-import { GriddleActions } from 'griddle-core';
+import { Reducers, States, GriddleReducer, Selectors, Utils, GriddleActions } from 'griddle-core';
 import { GriddleHelpers as Helpers } from 'griddle-core'
 
 //This gets the previous and newValue if newValue exists
@@ -19,8 +19,19 @@ export function combinePlugins(plugins) {
       states: previousOrCombined(previous.states, current.states),
       helpers: previousOrCombined(previous.helpers, current.helpers),
       components: previousOrCombined(previous.components, current.components),
+      selectors: previousOrCombined(previous.selectors, current.selectors)
     }
-  ), { actions: GriddleActions, reducers: [], states: [], helpers: [], components: []})
+  ), { actions: GriddleActions, reducers: [], states: [], helpers: [], components: [], selectors: []})
+}
+
+let combinedPlugins = null;
+
+export function getCombinedPlugins(plugins) {
+  if (combinedPlugins === null) {
+    combinedPlugins = combinePlugins(plugins);
+  }
+
+  return combinedPlugins;
 }
 
 //composes functions left to right
@@ -48,8 +59,23 @@ export const combineComponents = ({ plugins = null, components = null }) => {
   return composedComponents;
 }
 
+export const processSelectors = (plugins) => {
+  Selectors.localSelectors.registerUtils(Utils.sortUtils);
+  if(!plugins) {
+    return Selectors.localSelectors.griddleStateSelector
+  }
+
+  const combinedPlugin = getCombinedPlugins(plugins);
+
+  var qqq = createSelector();
+debugger;
+  return Object.assign(Selectors.localSelectors, ...combinedPlugin.selectors);
+}
+
 //Should return GriddleReducer and the new components
 export const processPlugins = (plugins, originalComponents) => {
+  //TODO: This needs to go in favor of passing the sort props to the selectors
+
   if(!plugins) {
     return {
       actions: GriddleActions,
@@ -60,7 +86,7 @@ export const processPlugins = (plugins, originalComponents) => {
       )};
   }
 
-  const combinedPlugin = combinePlugins(plugins);
+  const combinedPlugin = getCombinedPlugins(plugins);
   const reducer = GriddleReducer(
     [States.data, States.local, ...combinedPlugin.states],
     [Reducers.data, Reducers.local, ...combinedPlugin.reducers],

@@ -6,12 +6,12 @@ import { Provider, connect } from 'react-redux';
 
 import thunk from 'redux-thunk';
 
-import { Reducers, States, GriddleReducer, Selectors, Utils } from 'griddle-core';
+import { Reducers, States, GriddleReducer, Utils } from 'griddle-core';
 import { GriddleActions } from 'griddle-core';
 import { GriddleHelpers as Helpers } from 'griddle-core'
 import { doOnReceiveProps, compose } from 'recompose';
 
-import { processPlugins } from './utils/pluginUtils';
+import { processPlugins, processSelectors } from './utils/pluginUtils';
 import PropertyHelper from './utils/propertyHelper';
 
 class GriddleLoader extends Component {
@@ -56,9 +56,9 @@ export var GriddleRedux = ({Griddle, Components, Plugins}) => {
   const GriddleContainer = (props) => (
     <Griddle {...props} />
   )
-  const { actions, reducer, components } =  processPlugins(Plugins, Components);
 
-  Selectors.localSelectors.registerUtils(Utils.sortUtils);
+  const { actions, reducer, components } =  processPlugins(Plugins, Components);
+  const selectors = processSelectors(Plugins);
 
   //this gets the initial settings for Griddle, wires up plugins and hooks in the other components.
   return class GriddleInitializer extends Component {
@@ -88,7 +88,7 @@ export var GriddleRedux = ({Griddle, Components, Plugins}) => {
       const a = { ...actions }
       this.connectedComponent = connect(
         createSelector(
-          Selectors.localSelectors.gridStateSelector,
+          selectors,
           (gridState) => (
             {
               ...gridState,
