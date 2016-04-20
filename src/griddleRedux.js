@@ -85,21 +85,18 @@ export var GriddleRedux = ({Griddle, Components, Plugins}) => {
         }
       )(GriddleLoader);
 
-      const a = { ...actions }
+      const selectorNames = selectors.outputSelectors.map(s => s.outputName);
+      const outputSelectors = selectors.outputSelectors.map(s => selectors[s.selectorName].bind(selectors));
+      const magicSelector = createSelector(
+        ...outputSelectors,
+        (...values) =>
+          values.reduce((previous, current, index) => {
+            previous[selectorNames[index]] = current;
+            return previous;
+          }, {})
+      )
       this.connectedComponent = connect(
-        createSelector(
-          selectors,
-          (gridState) => (
-            {
-              ...gridState,
-              data: gridState.visibleData.toJSON(),
-              metadata: gridState.metaData.toJSON(),
-              currentPageData: gridState.currentPageData.toJSON(),
-              renderProperties: gridState.renderProperties.toJSON(),
-              columnTitles: gridState.columnTitles
-            }
-          )
-        ),
+        magicSelector,
         { ...actions }
       )(GriddleContainer)
     }

@@ -2,7 +2,6 @@ import compose from 'lodash.compose';
 import { createSelector, createStructuredSelector } from 'reselect';
 
 import { Reducers, States, GriddleReducer, Selectors, Utils, GriddleActions } from 'griddle-core';
-import { GriddleHelpers as Helpers } from 'griddle-core'
 
 //This gets the previous and newValue if newValue exists
 //other wise just the previous value
@@ -17,11 +16,9 @@ export function combinePlugins(plugins) {
       actions: Object.assign(previous.actions, current.actions),
       reducers: previousOrCombined(previous.reducers, current.reducers),
       states: previousOrCombined(previous.states, current.states),
-      helpers: previousOrCombined(previous.helpers, current.helpers),
       components: previousOrCombined(previous.components, current.components),
-      selectors: previousOrCombined(previous.selectors, current.selectors)
     }
-  ), { actions: GriddleActions, reducers: [], states: [], helpers: [], components: [], selectors: []})
+  ), { actions: GriddleActions, reducers: [], states: [], components: []})
 }
 
 let combinedPlugins = null;
@@ -60,37 +57,29 @@ export const combineComponents = ({ plugins = null, components = null }) => {
 }
 
 export const processSelectors = (plugins) => {
-  Selectors.localSelectors.registerUtils(Utils.sortUtils);
-  if(!plugins) {
-    return Selectors.localSelectors.griddleStateSelector
-  }
+  const selectors = Object.keys(Selectors)
+    .map(a => Selectors[a])
+    .reduce((previous, current) => Object.assign(previous, current(Utils.sortUtils)), {});
 
-  const combinedPlugin = getCombinedPlugins(plugins);
-
-  var qqq = createSelector();
-debugger;
-  return Object.assign(Selectors.localSelectors, ...combinedPlugin.selectors);
+  return selectors;
 }
 
 //Should return GriddleReducer and the new components
 export const processPlugins = (plugins, originalComponents) => {
   //TODO: This needs to go in favor of passing the sort props to the selectors
-
   if(!plugins) {
     return {
       actions: GriddleActions,
       reducer : GriddleReducer(
         [States.data, States.local],
-        [Reducers.data, Reducers.local],
-        [Helpers.data, Helpers.local]
+        [Reducers.data, Reducers.local]
       )};
   }
 
   const combinedPlugin = getCombinedPlugins(plugins);
   const reducer = GriddleReducer(
     [States.data, States.local, ...combinedPlugin.states],
-    [Reducers.data, Reducers.local, ...combinedPlugin.reducers],
-    [Helpers.data, Helpers.local, ...combinedPlugin.helpers]
+    [Reducers.data, Reducers.local, ...combinedPlugin.reducers]
   );
 
   const components = combineComponents({ plugins, components: originalComponents });
