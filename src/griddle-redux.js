@@ -119,6 +119,10 @@ export var GriddleRedux = ({Griddle, Components, Plugins}) => class GriddleRedux
     this.component = GriddleContainer(actions)(Griddle);
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.components = Object.assign({}, this.components, nextProps.components);
+  }
+
   render() {
     return (
       <Provider store={this.store}>
