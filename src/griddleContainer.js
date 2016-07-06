@@ -67,6 +67,12 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
     }
   }
 
+  function getRenderPropertiesNotCached(renderProperties) {
+    return renderProperties.toJSON();
+  }
+
+  const getRenderProperties = memoize(getRenderPropertiesNotCached);
+
   function getDataNotCached(data) {
     return data.toJSON();
   }
@@ -77,7 +83,7 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
     const keys = state.keySeq().toJSON();
 
     const jsonState = keys.reduce((previous, current) => {
-      if (current === 'data') {
+      if (current === 'data' && current !== 'renderProperties') {
         return previous;
       }
 
@@ -90,6 +96,7 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
     }, {});
 
     jsonState["data"] = getData(state.get('data'));
+    jsonState["renderProperties"] = getRenderProperties(state.get('renderProperties'));
 
     return { state: jsonState };
   }
