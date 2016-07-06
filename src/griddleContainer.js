@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import memoize from 'lodash.memoize';
 
 //import { GriddleActions } from 'griddle-core';
 import PropertyHelper from './utils/propertyHelper';
@@ -55,6 +56,7 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
 
     render() {
       const { state, dispatch, dataKey } = this.props;
+
       return (
         <ComposedComponent
           {...state}
@@ -65,13 +67,32 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
     }
   }
 
+  function getDataNotCached(data) {
+    return data.toJSON();
+  }
+
+  const getData = memoize(getDataNotCached);
+
   function select(state) {
-    return {
-      state: state.toJSON()
-    };
+    const keys = state.keySeq().toJSON();
+
+    const jsonState = keys.reduce((previous, current) => {
+      if (current === 'data') {
+        return previous;
+      }
+
+      const currentProperty = state.get(current);
+      previous[current] = currentProperty.toJSON ?
+        currentProperty.toJSON() :
+        currentProperty;
+
+      return previous;
+    }, {});
+
+    jsonState["data"] = getData(state.get('data'));
+
+    return { state: jsonState };
   }
 
   return connect(select)(Container);
 }
-
-

@@ -1,6 +1,6 @@
 {
   "name": "griddle-connector",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "Connects griddle-core to react components",
   "main": "build/griddle-connector.js",
   "scripts": {
@@ -48,8 +48,9 @@
     "redux-thunk": "^1.0.0"
   },
   "dependencies": {
-    "object-assign": "~2.0.0",
-    "lodash.compose": "^2.4.1"
+    "lodash.compose": "^2.4.1",
+    "lodash.memoize": "^4.1.0",
+    "object-assign": "~2.0.0"
   },
   "peerDependencies": {
     "react": "^0.14.0",
