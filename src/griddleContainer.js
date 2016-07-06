@@ -83,7 +83,7 @@ export var GriddleContainer = (Actions) => ComposedComponent => {
     const keys = state.keySeq().toJSON();
 
     const jsonState = keys.reduce((previous, current) => {
-      if (current === 'data' && current !== 'renderProperties') {
+      if (current === 'data' || current === 'renderProperties') {
         return previous;
       }
 
